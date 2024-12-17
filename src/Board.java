@@ -1,14 +1,29 @@
+package src;
+
 import java.util.Random;
 public class Board {
-    private int cols,rows;
+    private int cols;
+    private int rows;
     private char[][] board;
     private boolean[][] mines;
-    private boolean[][] revealed;
     private boolean[][] marked;
+     boolean[][] revealed;
+     int emptyHouse;
+    public int getRows() {
+        return rows;
+    }
+    public int getCols() {
+        return cols;
+    }
+//    public void setRevealed(boolean[][] revealed) {
+//        this.revealed = revealed;
+//    }
+
 
     public Board(int cols,int rows,int mineCount){
         this.rows=rows;
         this.cols=cols;
+        this.emptyHouse=rows*cols - mineCount;
         this.board=new char[rows][cols];
         this.mines=new boolean[rows][cols];
         this.revealed=new boolean[rows][cols];
@@ -31,17 +46,14 @@ public class Board {
     }
 
     public void toggleMark(int r,int c){
-        if(mines[r][c]){
-            mines[r][c]=false;
-        }
-        mines[r][c]=true;
+      marked[r][c] = !marked[r][c];
     }
 
     private int countSurroundingMines(int r,int c){
         int count=0;
         for (int i = r-1; i <=r+1 ; i++) {
             for (int j=c-1; j<=c+1 ; j++){
-                if(i>=0 && i<rows && j>0 && j<cols && mines[i][j]){
+                if(i>=0 && i<rows && j>=0 && j<cols && mines[i][j]){
                     count++;
                 }
             }
@@ -62,8 +74,8 @@ public class Board {
     }
 
     public void revealMines(){
-        for (int i = 1; i <=rows ; i++) {
-            for (int j = 1; j <=cols; j++){
+        for (int i = 0; i <rows ; i++) {
+            for (int j = 0; j <cols; j++){
                 if (mines[i][j]){
                     revealed[i][j]=true;
                 }
@@ -71,30 +83,33 @@ public class Board {
         }
     }
 
+    private void printColoredChar(String colorCode, String charToPrint){
+        System.out.print("\u001B[" + colorCode + "m" + charToPrint + "\u001B[0m ");
+    }
+
     public void printBoard(){
-        System.out.println(" ");
-        for (int i = 0; i <cols ; i++) {
+        System.out.print("  ");
+        for (int i = 1; i <=cols ; i++) {
             System.out.print(i +" ");
         }
-        for (int i = 0; i <rows ; i++){
-            System.out.print((char)('A'+ i)+ " ");
-            for (int j = 0; j <cols ; j++){
+        System.out.println();
+        for (int i = 0; i <rows ; i++) {
+            System.out.print((char) ('A' + i) + " ");
+            for (int j = 0; j < cols; j++) {
                 if (revealed[i][j]) {
                     if (mines[i][j]) {
-                        System.out.print("\u001B[41m\u001B[30m*\u001B[0m");
+                        printColoredChar("41;30", "#");
                     } else {
-                        int surroundingMines = countSurroundingMines(i, j);
-                        System.out.print("\u001B[34m" + surroundingMines + "\u001B[0m");
+                        printColoredChar("34", String.valueOf(countSurroundingMines(i, j)));
                     }
+                } else if (marked[i][j]) {
+                    printColoredChar("33", "M");
+                } else {
+                    printColoredChar("37", "*");
                 }
-                else if(marked[i][j]){
-                    System.out.print("\u001B[33mF\u001B[0m ");
-                }
-                else {
-                    System.out.print("\u001B[37m.\u001B[0m ");
-                }
-            }
-            System.out.println();
+
+          }
+             System.out.println();
         }
+      }
     }
-}
