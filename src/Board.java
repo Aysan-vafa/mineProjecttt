@@ -61,6 +61,26 @@ public class Board {
         return count;
     }
 
+    public void revealAdjacent(int r, int c) {
+        if (mines[r][c]) {
+            return;
+        }
+        if (revealed[r][c]) {
+            return;
+        }
+        revealed[r][c] = true;
+
+        if (countSurroundingMines(r, c) == 0) {
+            for (int i = r - 1; i <= r + 1; i++) {
+                for (int j = c - 1; j <= c + 1; j++) {
+                    if (i >= 0 && i < rows && j >= 0 && j < cols && !revealed[i][j]) {
+                        revealAdjacent(i, j);
+                    }
+                }
+            }
+        }
+    }
+
     public boolean isMine(int r,int c){
         return mines[r][c];
     }
@@ -83,22 +103,67 @@ public class Board {
         }
     }
 
-    private void printColoredChar(String colorCode, String charToPrint){
-        System.out.print("\u001B[" + colorCode + "m" + charToPrint + "\u001B[0m ");
+//    private void printColoredChar(String colorCode, String charToPrint){
+//        System.out.print("\u001B[" + colorCode + "m" + charToPrint + "\u001B[0m ");
+//    }
+//
+//    public void printBoard(){
+//        System.out.print("  ");
+//        for (int i = 1; i <=cols ; i++) {
+//            System.out.print(i +" ");
+//        }
+//        System.out.println();
+//        for (int i = 0; i <rows ; i++) {
+//            System.out.print((char) ('A' + i) + " ");
+//            for (int j = 0; j < cols; j++) {
+//                if (revealed[i][j]) {
+//                    if (mines[i][j]) {
+//                        printColoredChar("41;30", "#");
+//                    } else if (countSurroundingMines(i,j) == 0){System.out.print(" ");}
+//
+//                     else{   printColoredChar("34", String.valueOf(countSurroundingMines(i, j)));
+//                    }
+//                } else if (marked[i][j]) {
+//                    printColoredChar("33", "M");
+//                } else {
+//                    printColoredChar("37", "*");
+//                }
+//
+//          }
+//             System.out.println();
+//        }
+//      }
+
+    private static void printColoredChar(String color, String ch) {
+        System.out.print((char) 27 + "[" + color + "m" + ch + (char) 27 + "[0m" + " ");
+    }
+    private static void printColoredChar(String color, char ch) {
+        System.out.print((char) 27 + "[" + color + "m" + ch + (char) 27 + "[0m" + " ");
     }
 
-    public void printBoard(){
+    public void printBoard() {
+        System.out.print("\n\n\n");
         System.out.print("  ");
-        for (int i = 1; i <=cols ; i++) {
-            System.out.print(i +" ");
+        for (int i = 1; i <= cols; i++) {
+            System.out.print(i + "  ");
         }
         System.out.println();
-        for (int i = 0; i <rows ; i++) {
-            System.out.print((char) ('A' + i) + " ");
+        // Print top border
+        System.out.print("  ");
+        for (int i = 0; i < cols; i++) {
+            System.out.print("---");
+        }
+        System.out.println();
+        for (int i = 0; i < rows; i++) {
+
+            System.out.print((char) ('A' + i) + "|");
             for (int j = 0; j < cols; j++) {
+
                 if (revealed[i][j]) {
                     if (mines[i][j]) {
                         printColoredChar("41;30", "#");
+                    } else if (countSurroundingMines(i, j) == 0) {
+                        System.out.print("  ");
                     } else {
                         printColoredChar("34", String.valueOf(countSurroundingMines(i, j)));
                     }
@@ -107,9 +172,19 @@ public class Board {
                 } else {
                     printColoredChar("37", "*");
                 }
+                System.out.print("|");
 
-          }
-             System.out.println();
+            }
+            System.out.println();
+
+            System.out.print("  ");
+            for (int k = 0; k < cols; k++) {
+                System.out.print("---");
+            }
+            System.out.println();
+
+
         }
-      }
     }
+
+}

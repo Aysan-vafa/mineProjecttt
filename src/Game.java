@@ -26,23 +26,29 @@ public class Game {
 //                board.printBoard();
             }
             else if (board.isMine(r,c)){
-                System.out.println("Game over! you hit a mine.");
+                System.out.println("\n\n\nGame over! you hit a mine.\n\n\n");
                 board.revealMines();
                 board.printBoard();
                 break;
             }
 
-            else if (ckeckWin()){
-                System.out.println("Congratulations! You won!");
-                break;
-            }
+//            else if (checkWin()){
+//                System.out.println("Congratulations! You won!");
+//                break;
+//            }
             else {
-                board.revealed[r][c]=true;
+//                board.revealed[r][c]=true;
+                board.revealAdjacent(r,c);
+                if(checkWin()){
+                    board.printBoard();
+                    System.out.println("\n\n\nCongratulations! You won!\n\n\n");
+                    break;
+                }
             }
             board.printBoard();
         }
     }
-    private boolean ckeckWin(){
+    private boolean checkWin(){
         int c=0;
         for (int i=0 ; i< board.getRows() ; i++){
             for (int j=0 ; j< board.getCols() ; j++){
@@ -51,11 +57,7 @@ public class Game {
                 }
             }
         }
-        if (c == board.emptyHouse){
-            return true;
-        }
-        else {
-            return false;
-        }
+      return(c == board.emptyHouse);
+
     }
 }
